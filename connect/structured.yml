@@ -1,0 +1,40 @@
+input:
+  kafka:
+    addresses: ["localhost:9092"]
+    topics: ["unprocessed"]
+    consumer_group: ""
+pipeline:
+  processors:
+  - schema_registry_decode:
+      url: "http://localhost:8081"
+  - branch:
+      processors:
+        - openai_chat_completion:
+            api_key: "${OPENAI_API_KEY}"
+            model: gpt-4o-mini
+            prompt: |
+                    Your task is to extract senders and classify emails into one of the following categories:
+
+                    Primary: Emails from people you know and messages that don’t appear in other tabs.
+                    Social: Messages from social networks and media-sharing sites.
+                    Promotions: Deals, offers, and other promotional emails.
+                    Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
+                    Forums: Messages from online groups, discussion boards, and mailing lists.
+
+                    Respond in JSON only in the format of {"categories": ["Promotions"], "sender": "bob@example.com"}
+
+                    Here is the email:
+                    ${!this.email}
+            response_format: json_schema
+            schema_registry:
+                url: "http://localhost:8081"
+                subject: "categorized_emails_enrichment"
+            result_map: |
+                root = root.merge(this)
+        - schema_registry_encode:
+            url: "http://localhost:8081"
+            subject: categorized_emails-value
+output:
+  kafka:
+    addresses: ["localhost:9092"]
+    topic: "categorized_emails"

@@ -1,0 +1,4 @@
+name: validation
+input-topic: ""
+output-topics: []
+language: rust
