@@ -29,9 +29,10 @@ echo "Cluster restarted"
 
 # Compile transforms
 echo "Compiling transforms..."
+rustup target add wasm32-wasip1 # need this!
 
 build_and_deploy_transform() {
-    cargo build --target=wasm32-wasip1 --release --package $1 --manifest-path /transforms/$1/Cargo.toml
+    RUSTFLAGS=-Ctarget-feature=+simd128 cargo build --target=wasm32-wasip1 --release --package $1 --manifest-path transforms/$1/Cargo.toml
     mv transforms/$1/target/wasm32-wasip1/release/$1.wasm transforms/$1/
     docker compose exec -w /transforms/$1 redpanda-0 rpk transform deploy
 }
