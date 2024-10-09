@@ -40,7 +40,11 @@ No more shipping our sensitive data out of our network (expensive egress) and to
 
 ## Running it
 
-Check the `running` directory. In there you will find numbered scripts that you can execute in order.
+Check the `running` directory. In there you will find numbered scripts that you can execute in order:
+
+```
+bash running/0-setup.sh
+```
 
 ## How it works
 
