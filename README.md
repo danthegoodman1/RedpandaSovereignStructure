@@ -32,11 +32,16 @@ No more shipping our sensitive data out of our network (expensive egress) and to
 
 ## Code structure
 
+Expected dependencies to be installed are:
+- Docker
+- Rust toolchain (rustup, cargo, etc.)
+- A unix-based shell env (developed with zsh on arm macOS)
+
+Everything should work out of the box. If something breaks first run, please raise an issue!
+
 - [`running`](./running/), you will find the various scripts needed to execute the code.
 - [`transforms`](./transforms/) you will find the various Rust data transforms that are used
 - [`helpers`](./helpers) are just various helper scripts I used to develop, tune, and eval the project, and are not required for execution or evaluation
-
-
 
 ## Running it
 
