@@ -30,8 +30,8 @@ echo "Cluster restarted"
 # Compile transforms
 echo "Compiling transforms..."
 
-cargo build --target=wasm32-unknown-unknown --release --package format --manifest-path transforms/format/Cargo.toml
-mv transforms/format/target/wasm32-unknown-unknown/release/format.wasm transforms/format/
+cargo build --target=wasm32-wasip1 --release --package format --manifest-path transforms/format/Cargo.toml
+mv transforms/format/target/wasm32-wasip1/release/format.wasm transforms/format/
 docker compose exec -w /transforms/format redpanda-0 rpk transform deploy
 
 echo "Transforms compiled"
