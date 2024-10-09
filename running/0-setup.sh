@@ -31,9 +31,9 @@ echo "Cluster restarted"
 echo "Compiling transforms..."
 
 build_and_deploy_transform() {
-    cargo build --target=wasm32-unknown-wasi --release --package $1 --manifest-path $2/Cargo.toml
-    mv $2/target/wasm32-unknown-wasi/release/$1.wasm $2/
-    docker compose exec -w /transforms/$2 redpanda-0 rpk transform deploy
+    cargo build --target=wasm32-wasip1 --release --package $1 --manifest-path /transforms/$1/Cargo.toml
+    mv transforms/$1/target/wasm32-wasip1/release/$1.wasm transforms/$1/
+    docker compose exec -w /transforms/$1 redpanda-0 rpk transform deploy
 }
 
 build_and_deploy_transform format transforms/format
