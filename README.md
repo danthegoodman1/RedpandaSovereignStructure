@@ -8,6 +8,10 @@ Submission to https://redpanda-hackathon.devpost.com/
 
 Turns unstructured data into structured data using local models that run directly in Redpanda, so your data never has to leave.
 
+## How it works
+
+![image (4)](/assets/image%20(4).png)
+
 ## Motivation
 
 OpenAI structured outputs are super useful, unlocking many novel use cases for LLMs, yet we seldom have the luxuries of managed models with open source models that we can run locally.
