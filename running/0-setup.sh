@@ -43,6 +43,7 @@ build_and_deploy_transform() {
 }
 
 build_and_deploy_transform format transforms/format
+build_and_deploy_transform validation transforms/validation
 
 echo "Transforms compiled"
 
