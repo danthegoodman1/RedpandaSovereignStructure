@@ -15,7 +15,7 @@ docker compose exec redpanda-0 rpk topic create unverified
 
 docker compose exec redpanda-0 rpk topic create unprocessable
 
-docker compose exec redpanda-0 rpk topic create verified
+docker compose exec redpanda-0 rpk topic create structured
 
 echo "Topics created"
 

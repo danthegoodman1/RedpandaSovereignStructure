@@ -10,6 +10,16 @@ Turns unstructured data into structured data using local models that run directl
 
 ## How it works
 
+- Ingest unstructured data into the `input` topic
+- Use the `format` transform to wrap that data with a retry counter, sending to the `unprocessed` topic
+- Perform inference on records from the `unprocessed` topic, outputting to the `unverified` topic (with some light bloblang manipulation to recover the retry counter record structure)
+- `validation` transform reads from the `unprocessed` topic and will either:
+  - Write the record to the `structured` topic if the JSON is valid and conforms to the schema
+  - Rewrites the record to the `unprocessed` topic and increments the attempt counter if less than the threshold
+  - Writes the record to the `unprocessable` topic if the retry threshold is met.
+
+Diagram:
+
 ![image (4)](/assets/image%20(4).png)
 
 ## Motivation
