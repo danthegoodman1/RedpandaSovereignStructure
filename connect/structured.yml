@@ -10,7 +10,7 @@ pipeline:
   - branch:
       processors:
         - ollama_chat:
-            model: gpt-4o-mini
+            model: llama3.2:1b
             prompt: |
                     Your task is to extract senders and classify emails into one of the following categories:
 
@@ -20,20 +20,15 @@ pipeline:
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
 
-                    Respond in JSON only in the format of {"categories": ["Promotions"], "sender": "bob@example.com"}
+                    Respond in JSON with the following schema:
+                    ${}
 
                     Here is the email:
-                    ${!this.email}
+                    ${!this.content.email}
             response_format: json
-            schema_registry:
-                url: "http://localhost:8081"
-                subject: "record_attempted"
             result_map: |
                 root = root.merge(this)
-        - schema_registry_encode:
-            url: "http://localhost:8081"
-            subject: categorized_emails-value
 output:
   kafka:
     addresses: ["localhost:9092"]
-    topic: "categorized_emails"
+    topic: "unverified"
