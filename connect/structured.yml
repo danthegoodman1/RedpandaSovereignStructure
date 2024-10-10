@@ -9,8 +9,7 @@ pipeline:
       url: "http://localhost:8081"
   - branch:
       processors:
-        - openai_chat_completion:
-            api_key: "${OPENAI_API_KEY}"
+        - ollama_chat:
             model: gpt-4o-mini
             prompt: |
                     Your task is to extract senders and classify emails into one of the following categories:
@@ -25,7 +24,7 @@ pipeline:
 
                     Here is the email:
                     ${!this.email}
-            response_format: json_schema
+            response_format: json
             schema_registry:
                 url: "http://localhost:8081"
                 subject: "categorized_emails_enrichment"

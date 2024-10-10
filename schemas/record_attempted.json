@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OutputRecord",
+  "type": "object",
+  "properties": {
+    "attempt": {
+      "type": "integer",
+      "description": "The number of attempts"
+    },
+    "content": {
+      "type": "string",
+      "description": "The content of the record"
+    }
+  },
+  "required": ["attempt", "content"]
+}

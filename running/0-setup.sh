@@ -17,6 +17,11 @@ docker compose exec redpanda-0 rpk topic create verified
 
 echo "Topics created"
 
+# Add schemas
+echo "Adding schemas..."
+docker compose exec redpanda-0 rpk registry schema create record_attempted --schema /schemas/record_attempted.json
+echo "Schemas added"
+
 # Enable transforms
 echo "Enabling transforms..."
 docker compose exec redpanda-0 rpk cluster config set data_transforms_enabled true

@@ -34,6 +34,7 @@ services:
     volumes:
       - redpanda-0:/var/lib/redpanda/data
       - ./transforms:/transforms
+      - ./schemas:/schemas
     networks:
       - redpanda_network
     ports:
