@@ -14,6 +14,8 @@ struct LLMResult {
     content: String,
 }
 
+const SCHEMA_ID: i32 = 2;
+
 fn main() {
     on_record_written(my_transform);
 }
@@ -26,14 +28,13 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
     // Attempt to parse the content as JSON
     if let Ok(_parsed_json) = serde_json::from_str::<Value>(&input_record.content) {
         // This is valid JSON, but we need to check if it is a valid schema
-        let (schema_id, record) = redpanda_transform_sdk_sr::decode_schema_id(&input_record.content.as_bytes())?;
 
         // Get the schema from the schema registry
         let client = redpanda_transform_sdk_sr::SchemaRegistryClient::new();
-        let schema = client.lookup_schema_by_id(schema_id).expect("Failed to lookup schema");
+        let schema = client.lookup_schema_by_id(redpanda_transform_sdk_sr::SchemaId(SCHEMA_ID)).expect("Failed to lookup schema");
 
         // Validate the record against the schema
-        if jsonschema::is_valid(&json!(schema.schema()), &json!(record)) {
+        if jsonschema::is_valid(&json!(schema.schema()), &json!(event.record.value().unwrap())) {
             // Valid! Let's write it to the verified topic
             writer.write_with_options(event.record, WriteOptions::to_topic("verified"))?;
             return Ok(())
