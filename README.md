@@ -22,13 +22,20 @@ First, the following quote from OpenAI gives pause:
 
 > However, once the model has already sampled `{“val`, then `{` is no longer a valid token
 
-Wel... `{` is still valid. It can be part of the string :)
+Well... `{` is still valid. It can be part of the string :)
 
 While this may be a poorly contrived example, it may not be, so we don’t fully know the limitations of their JSON output (e.g. do they support `null` as the output, or a top-level array?)
 
 What we trade in some runtime complexity to coordinate the AI and transform stages is orders of magnitude less complex and costly than what OpenAI has done, and now we can colocate the model with our data!
 
 No more shipping our sensitive data out of our network (expensive egress) and to OpenAI who does who knows with it!
+
+## Limitations
+
+This system is not perfect, there are a few unoptimal solutions that have to be performed:
+
+1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform as a string for validation.
+2. Lack of dynamic injection of schema variable into data transforms (at least that I could find). You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms.
 
 ## Code structure
 
@@ -54,3 +61,7 @@ bash running/0-setup.sh
 ## How it works
 
 TODO: add diagram
+
+## Gotchas and other notes
+
+you will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms

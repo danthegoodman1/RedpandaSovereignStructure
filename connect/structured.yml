@@ -27,7 +27,7 @@ pipeline:
             response_format: json
             schema_registry:
                 url: "http://localhost:8081"
-                subject: "categorized_emails_enrichment"
+                subject: "record_attempted"
             result_map: |
                 root = root.merge(this)
         - schema_registry_encode:
