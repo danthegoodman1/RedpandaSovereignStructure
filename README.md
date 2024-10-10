@@ -49,7 +49,7 @@ No more shipping our sensitive data out of our network (expensive egress) and to
 This system is not perfect, there are a few unoptimal solutions that have to be performed:
 
 1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform as a string for validation.
-2. Lack of dynamic injection of schema variable into data transforms (at least that I could find). You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms.
+2. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms. (there may be a way to resolve these then cache them with the schema registry sdk).
 
 ## Code structure
 
@@ -78,4 +78,4 @@ TODO: add diagram
 
 ## Gotchas and other notes
 
-you will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms
+You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.
