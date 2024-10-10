@@ -35,8 +35,8 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
 
         // Validate the record against the schema
         if jsonschema::is_valid(&json!(schema.schema()), &json!(event.record.value().unwrap())) {
-            // Valid! Let's write it to the verified topic
-            writer.write_with_options(event.record, WriteOptions::to_topic("verified"))?;
+            // Valid! Let's write it to the structured topic
+            writer.write_with_options(event.record, WriteOptions::to_topic("structured"))?;
             return Ok(())
         }
     }
