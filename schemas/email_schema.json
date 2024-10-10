@@ -1,16 +1,30 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "OutputRecord",
   "type": "object",
   "properties": {
-    "attempt": {
-      "type": "integer",
-      "description": "The number of attempts"
-    },
-    "content": {
+    "subject": {
       "type": "string",
-      "description": "The content of the record"
+      "description": "The subject line of the email"
+    },
+    "from_name": {
+      "type": "string",
+      "description": "The name of the sender"
+    },
+    "from_addr": {
+      "type": "string",
+      "format": "email",
+      "description": "The email address of the sender"
+    },
+    "body": {
+      "type": "string",
+      "description": "The main content of the email"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["Forums", "Primary", "Promotions", "Updates", "Social"],
+      "description": "The category or type of the email"
     }
   },
-  "required": ["attempt", "content"]
+  "required": ["subject", "from_addr", "body"],
+  "additionalProperties": false
 }
