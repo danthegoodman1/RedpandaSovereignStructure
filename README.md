@@ -79,3 +79,7 @@ TODO: add diagram
 ## Gotchas and other notes
 
 You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.
+
+## Future work
+
+- Exploring more performant WASM allocators for rust transforms
