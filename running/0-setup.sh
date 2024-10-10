@@ -1,3 +1,5 @@
+set -e # exit on error
+
 echo "Setting up the environment..."
 
 docker compose down -v
