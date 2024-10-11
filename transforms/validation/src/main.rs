@@ -47,7 +47,7 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
                 ) {
                     // Valid! Let's write it to the structured topic
                     writer
-                        .write_with_options(event.record, WriteOptions::to_topic("structured"))?;
+                        .write_with_options(event.record, WriteOptions::to_topic("structured")).expect("Failed to write to structured topic");
                     return Ok(());
                 } else {
                     eprintln!("output did not match schema");
@@ -65,7 +65,7 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
             ) {
                 // Valid! Let's write it to the structured topic
                 writer
-                    .write_with_options(event.record, WriteOptions::to_topic("structured"))?;
+                    .write_with_options(event.record, WriteOptions::to_topic("structured")).expect("Failed to write to structured topic");
                 return Ok(());
             }
             eprintln!("output object did not match schema");
@@ -89,7 +89,7 @@ fn record_failed(
 
     // If the attempt is greater than 3, write to "unprocessable" topic
     if input_record.attempt > MAX_ATTEMPTS {
-        writer.write_with_options(event.record, WriteOptions::to_topic("unprocessable"))?;
+        writer.write_with_options(event.record, WriteOptions::to_topic("unprocessable")).expect("Failed to write to unprocessable topic");
         eprintln!("Record is unprocessable");
         return Ok(());
     }
@@ -98,7 +98,7 @@ fn record_failed(
     writer.write_with_options(
         BorrowedRecord::new(event.record.key(), Some(&new_record.as_bytes())),
         WriteOptions::to_topic("unprocessed"),
-    )?;
+    ).expect("Failed to write to unprocessed topic");
     eprintln!("Invalid JSON in content field");
     Ok(())
 }

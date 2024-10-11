@@ -12,7 +12,7 @@ pipeline:
         - ollama_chat:
             model: llama3.2:1b
             prompt: |
-                    Your task is to extract senders and classify emails into one of the following categories:
+                    Your task is to extract senders and classify emails into one of the following categories, and output it as JSON:
 
                     Primary: Emails from people you know and messages that don’t appear in other tabs.
                     Social: Messages from social networks and media-sharing sites.
@@ -20,13 +20,13 @@ pipeline:
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
 
-                    Please output pure JSON using the following example:
+                    Please output pure JSON using the following example as a reference for structure:
                     {
                       "subject": "Welcome to our newsletter!",
                       "from_name": "John Doe",
                       "from_addr": "john.doe@example.com",
                       "body": "Thank you for subscribing to our newsletter. We'll keep you updated with the latest news and offers.",
-                      "category": "Promotions"  // Could be: "Forums", "Primary", "Promotions", "Updates", or "Social"
+                      "category": "Promotions"
                     }
 
                     Here is the email:
@@ -38,3 +38,9 @@ output:
   kafka:
     addresses: ["redpanda-0:9092"]
     topic: "unverified"
+logger:
+  level: DEBUG
+  format: logfmt
+  add_timestamp: false
+  static_fields:
+    '@service': redpanda-connect
