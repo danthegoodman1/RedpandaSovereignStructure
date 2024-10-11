@@ -50,6 +50,7 @@ This system is not perfect, there are a few unoptimal solutions that have to be 
 
 1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform as a string for validation.
 2. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms. (there may be a way to resolve these then cache them with the schema registry sdk).
+3. There is no way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
 
 ## Code structure
 

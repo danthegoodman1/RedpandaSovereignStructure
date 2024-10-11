@@ -21,7 +21,37 @@ pipeline:
                     Forums: Messages from online groups, discussion boards, and mailing lists.
 
                     Respond in JSON with the following schema:
-                    ${}
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "properties": {
+                        "subject": {
+                          "type": "string",
+                          "description": "The subject line of the email"
+                        },
+                        "from_name": {
+                          "type": "string",
+                          "description": "The name of the sender"
+                        },
+                        "from_addr": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "The email address of the sender"
+                        },
+                        "body": {
+                          "type": "string",
+                          "description": "The main content of the email"
+                        },
+                        "category": {
+                          "type": "string",
+                          "enum": ["Forums", "Primary", "Promotions", "Updates", "Social"],
+                          "description": "The category or type of the email"
+                        }
+                      },
+                      "required": ["subject", "from_addr", "body"],
+                      "additionalProperties": false
+                    }
+
 
                     Here is the email:
                     ${!this.content.email}

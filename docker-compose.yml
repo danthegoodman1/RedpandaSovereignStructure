@@ -35,6 +35,7 @@ services:
       - redpanda-0:/var/lib/redpanda/data
       - ./transforms:/transforms
       - ./schemas:/schemas
+      - ./connect:/connect
     networks:
       - redpanda_network
     ports:
@@ -63,5 +64,20 @@ services:
             urls: ["http://redpanda-0:9644"]
     ports:
       - 8080:8080
+    depends_on:
+      - redpanda-0
+  redpanda-connect:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.2.6
+    container_name: redpanda-connect
+    command:
+      - connect
+      - run
+      - -r
+      - /connect/structured.yml
+      - --chilled
+    volumes:
+      - ./connect:/connect
+    networks:
+      - redpanda_network
     depends_on:
       - redpanda-0
