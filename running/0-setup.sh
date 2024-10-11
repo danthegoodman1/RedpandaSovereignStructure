@@ -22,6 +22,7 @@ echo "Topics created"
 # Add schemas
 echo "Adding schemas..."
 docker compose exec redpanda-0 rpk registry schema create record_attempted --schema /schemas/record_attempted.json
+docker compose exec redpanda-0 rpk registry schema create email_schema --schema /schemas/email_schema.json
 echo "Schemas added"
 
 # Enable transforms

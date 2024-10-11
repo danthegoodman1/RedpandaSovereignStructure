@@ -20,44 +20,20 @@ pipeline:
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
 
-                    Please output pure JSON using the following JSON schema:
+                    Please output pure JSON using the following example:
                     {
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "type": "object",
-                      "properties": {
-                        "subject": {
-                          "type": "string",
-                          "description": "The subject line of the email"
-                        },
-                        "from_name": {
-                          "type": "string",
-                          "description": "The name of the sender"
-                        },
-                        "from_addr": {
-                          "type": "string",
-                          "format": "email",
-                          "description": "The email address of the sender"
-                        },
-                        "body": {
-                          "type": "string",
-                          "description": "The main content of the email"
-                        },
-                        "category": {
-                          "type": "string",
-                          "enum": ["Forums", "Primary", "Promotions", "Updates", "Social"],
-                          "description": "The category or type of the email"
-                        }
-                      },
-                      "required": ["subject", "from_addr", "body"],
-                      "additionalProperties": false
+                      "subject": "Welcome to our newsletter!",
+                      "from_name": "John Doe",
+                      "from_addr": "john.doe@example.com",
+                      "body": "Thank you for subscribing to our newsletter. We'll keep you updated with the latest news and offers.",
+                      "category": "Promotions"  // Could be: "Forums", "Primary", "Promotions", "Updates", or "Social"
                     }
 
-
                     Here is the email:
-                    ${!this.content.email}
+                    ${!this.content}
             response_format: json
       result_map: |
-          root = root.merge(this)
+          root.output = this
 output:
   kafka:
     addresses: ["redpanda-0:9092"]
