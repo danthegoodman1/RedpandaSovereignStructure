@@ -67,6 +67,7 @@ services:
     depends_on:
       - redpanda-0
   redpanda-connect:
+    # image: docker.redpanda.com/redpandadata/connect
     image: docker.redpanda.com/redpandadata/redpanda:v24.2.6
     container_name: redpanda-connect
     command:

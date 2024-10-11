@@ -20,7 +20,7 @@ pipeline:
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
 
-                    Respond in JSON with the following schema:
+                    Please output pure JSON using the following JSON schema:
                     {
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "object",
