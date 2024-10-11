@@ -59,5 +59,7 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
         BorrowedRecord::new(event.record.key(), Some(&new_record.as_bytes())),
         WriteOptions::to_topic("unprocessed"),
     )?;
-    Err("Invalid JSON in content field".into())
+    eprintln!("Invalid JSON in content field");
+    writer.write_with_options(event.record, WriteOptions::to_topic("unprocessable"))?;
+    Ok(())
 }
