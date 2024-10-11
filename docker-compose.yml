@@ -72,9 +72,7 @@ services:
     command:
       - connect
       - run
-      - -r
       - /connect/structured.yml
-      - --chilled
     volumes:
       - ./connect:/connect
     networks:

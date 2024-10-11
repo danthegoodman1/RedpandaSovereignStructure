@@ -73,6 +73,12 @@ Check the `running` directory. In there you will find numbered scripts that you 
 bash running/0-setup.sh
 ```
 
+You'll then want to run the `running/1-consume.sh` script in a terminal to consume final output.
+
+In a third terminal you can run `running/2-write.sh` to write records to the input topic.
+
+Note that the first time you produce a record it will have to download the llama model. This can take some time. Use `docker compose logs -f redpanda-connect` to see what it's up to!
+
 ## Gotchas and other notes
 
 You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.

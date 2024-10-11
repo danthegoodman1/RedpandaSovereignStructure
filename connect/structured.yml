@@ -2,7 +2,7 @@ input:
   kafka:
     addresses: ["redpanda-0:9092"]
     topics: ["unprocessed"]
-    consumer_group: ""
+    consumer_group: "ufrehgiurhiueh"
 pipeline:
   processors:
   - schema_registry_decode:
@@ -56,8 +56,8 @@ pipeline:
                     Here is the email:
                     ${!this.content.email}
             response_format: json
-            result_map: |
-                root = root.merge(this)
+      result_map: |
+          root = root.merge(this)
 output:
   kafka:
     addresses: ["redpanda-0:9092"]
