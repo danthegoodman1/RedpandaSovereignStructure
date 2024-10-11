@@ -24,7 +24,13 @@ fn main() {
 fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<dyn Error>> {
     let content = if let Some(value) = event.record.value() {
         // Parse the JSON-encoded bytes into a serde_json::Value
-        serde_json::from_slice(value).expect("Failed to deserialize input record")
+        match serde_json::from_slice(value) {
+            Ok(value) => value,
+            Err(e) => {
+                // If not JSON, return string
+                Value::String(String::from_utf8(value.to_vec())?)
+            }
+        }
     } else {
         Value::Null // Use Value::Null if no value is present
     };
