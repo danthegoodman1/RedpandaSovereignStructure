@@ -1,4 +1,4 @@
 name: validation
 input-topic: "unverified"
-output-topics: ["verified", "unprocessed", "unprocessable"]
+output-topics: ["structured", "unprocessed", "unprocessable"]
 language: rust
