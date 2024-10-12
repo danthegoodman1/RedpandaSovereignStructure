@@ -1,6 +1,6 @@
 # RedpandaSovereignStructure
 
-Reliably turning unstructured data into schema-conformant structed data using Redpanda Connect and Redpanda Data Transforms.
+Reliably turning unstructured data into schema-conformant structed data with contextual categorization using Redpanda Connect and Redpanda Data Transforms.
 
 Submission to https://redpanda-hackathon.devpost.com/
 
@@ -21,6 +21,8 @@ Sovereign Structure reliably turns unstructured data into JSON-schema conformant
 Diagram:
 
 ![image (4)](/assets/image%20(4).png)
+
+In the provided example, we use LLMs to structure incoming emails into a [JSON schema](./schemas/email_schema.json), as well as categorizing them for our inbox.
 
 Example input:
 ```
