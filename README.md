@@ -46,6 +46,8 @@ Example resulting record:
 }
 ```
 
+This example is a bit more structured because of the performance of smaller models, which we'll dive into below.
+
 ## Running it
 
 Check the `running` directory. In there you will find numbered scripts that you can execute in order:
