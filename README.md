@@ -139,7 +139,7 @@ Consuming from 'structured' topic...
 
 ```
 
-Notice the `"attempts": 2,`?
+Notice the `"attempts": 2`?
 
 As you can see from this example, the _first_ record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
 
@@ -151,7 +151,7 @@ While we exchange accuracy for speed and memory consumption by using small LLMs,
 
 I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can provide consistent outputs. However to use truly unstructured outputs (blobs of text), you need at least a 10x larger model.
 
-Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured to structured conversions. I would suggest `phi3:14b` or larger. Larger models quickly become more accurate and consistent with their outputs.
+Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured to structured conversions. I would suggest `phi3:14b` or larger. Larger models quickly become more accurate and consistent with their outputs. As you can see in the example above, smaller models will hallucinate fields rather than omitting them.
 
 For consistent production-level performance, `llama3.1:70b` or larger is required, running on GPU instances. However this is hardly an inconvenience for enterprise users in comparison to shipping data to OpenAI. While maxed-out macbook pros can run this, it INSTANTLY cooks the laptop, so I would not suggest testing that outside a GPU server.
 
@@ -167,5 +167,6 @@ The connect pipeline specifies the `json` output format. This works fine, but `t
 - The memory allocated to the WASM transforms has been bumped to 10MB because somehow something was very memory hungry?
 - Framework for evaluating best model for a given task
 - Improve error handling and reliability: Right now it doesn't handle things like blank records very well (trasnform will just crash from invalid JSON)
+- Improve the prompt, it's hard to iterate with small models on a laptop. For a production use case, using a large GPU machine with larger models and a wide variety of inputs to test should be performed to determine the proper model.
 
 Redpanda really is wildly easier to use than similar solutions in both the streaming and inference space. This, combined with great support in the community Slack, allowed me to rapidly iterate on this project.
