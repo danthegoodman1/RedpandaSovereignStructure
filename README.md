@@ -1,12 +1,12 @@
 # RedpandaSovereignStructure
 
-Turning unstructured data into structed data using Redpanda Connect and Redpanda Data Transforms.
+Reliably turning unstructured data into schema-conformant structed data using Redpanda Connect and Redpanda Data Transforms.
 
 Submission to https://redpanda-hackathon.devpost.com/
 
 ## Bottom line up front
 
-Soverign Structure reliably turns unstructured data into JSON-schema conformant structured data using LLMs that run directly in Redpanda, giving you the choice of model, and never requiring your data to leave your infrastructure.
+Sovereign Structure reliably turns unstructured data into JSON-schema conformant structured data using LLMs that run directly in Redpanda, giving you the choice of model, and never requiring your data to leave your infrastructure.
 
 ## How it works
 
@@ -54,11 +54,9 @@ _Note that it can also take some time to see the models run through the whole pi
 
 OpenAI structured outputs are super useful, unlocking many novel use cases for LLMs, yet we seldom have the luxuries of managed models with open source models that we can run locally.
 
-This achieves that.
+Sovereign Structure give us back the structured outputs feature of OpenAI models while also giving us all the advantages that [Redpanda Sovereign AI promises](https://ai.redpanda.com/).
 
-It gives us all the advantages that [Redpanda Sovereign AI promises](https://ai.redpanda.com/), while also providing the benefits of structured outputs.
-
-While a system that can directly follow [the design shared by OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/#:~:text=achieve%20100%25%20reliability.-,Constrained%20decoding,-Our%20approach%20is) might reduce the complexity of the pipeline and result in fewer errors landing in the DLQ, there are some advantages to this system.
+While a system that can directly follow [the design shared by OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/#:~:text=achieve%20100%25%20reliability.-,Constrained%20decoding,-Our%20approach%20is) might reduce the complexity of the pipeline and result in fewer errors landing in the `unrpocessable` topic, there are some advantages to this system.
 
 First, the following quote from OpenAI gives pause:
 
@@ -68,24 +66,23 @@ Well... `{` is still valid. It can be part of the string :)
 
 While this may be a poorly contrived example, it may not be, so we don’t fully know the limitations of their JSON output (e.g. do they support `null` as the output, or a top-level array?)
 
-One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support) (which is where the demo task comes from). However if you talk to enterprise customers, you'll understand you've probably already guessed where I'm about to take this, any why this solution is so valuable. This enables enterprises to:
+One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support) (which is where the demo task comes from). However, if you talk to enterprise customers, you've probably already guessed where I'm about to take this, any why this solution is so valuable. Sovereign structure enables enterprises to:
 
-1. Reduce costs (both egress and expensive managed inference)
-2. Keep our data in our environment (no more shipping sensitive data to OpenAI, which is often a non-starter for enterprise customers)
+1. Reduce costs for both egress and expensive managed inference
+2. Keep their data in their environment. No more shipping sensitive data to OpenAI (which is often a non-starter for enterprise customers)
 3. Choice of model:
     1. Balancing of throughput, accuracy, and resource consumption
     2. Ability to use differnet models that may perform better for certain tasks
     3. Use of proprietary models fine-tuned for their workloads
 
-A solution that achieves all of these with such simplicity does not exist in the industry right now, and Redpanda Connect + Data Transforms enables this.
+A solution that achieves all of these with such simplicity does not exist in the industry right now, and Redpanda Connect + Data Transforms enables this. This level of flexbility is critical to support enterprise AI use cases.
 
 ## Limitations
 
 This system is not perfect, there are a few unoptimal solutions that have to be performed:
 
-1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform for JSON and schema validation.
-2. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms (there may be a way to resolve these then cache them with the schema registry sdk).
-3. There is no (convenient) way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
+1. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms (there may be a way to resolve these then cache them with the schema registry sdk).
+2. There is no (convenient) way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
 
 ## Code structure
 
@@ -103,9 +100,9 @@ Everything should work out of the box. If something breaks first run, please rai
 
 ## Real world performance
 
-Without a GPU it can be pretty slow.
+Without a GPU it can be a bit slow depending on record size and throughput. Thankfully we can parallelize operations with more cores, and we can introduce GPU machines to wildly speed up inference time.
 
-However, the novel retry framework shows it's immense value in practice:
+The novel retry framework shows it's immense value in practice:
 
 ```
 dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh
@@ -119,7 +116,7 @@ Consuming from 'structured' topic...
 
 Notice the `\"attempts\":2`?
 
-As you can see from this example, the first record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
+As you can see from this example, the _first_ record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
 
 Additionally, ensuring that it conforms to an expected JSON schema is critical for production workloads.
 
