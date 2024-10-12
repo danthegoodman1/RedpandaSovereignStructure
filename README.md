@@ -30,9 +30,17 @@ Check the `running` directory. In there you will find numbered scripts that you 
 zsh running/0-setup.sh
 ```
 
-You'll then want to run the `running/1-consume.sh` script in a terminal to consume final output.
+You'll then want to run:
+```
+running/1-consume.sh
+```
+in a terminal to consume final output.
 
-In a third terminal you can run `running/2-write.sh` to write records to the input topic.
+In a third terminal you can run:
+```
+running/2-write.sh
+```
+to write records to the input topic.
 
 Note that the first time you produce a record it will have to download the llama model.
 
@@ -60,11 +68,16 @@ Well... `{` is still valid. It can be part of the string :)
 
 While this may be a poorly contrived example, it may not be, so we don’t fully know the limitations of their JSON output (e.g. do they support `null` as the output, or a top-level array?)
 
-What we trade in some runtime complexity to coordinate the AI and transform stages is orders of magnitude less complex and costly than what OpenAI has done, and now we can colocate the model with our data!
+One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support) (which is where the demo task comes from). However if you talk to enterprise customers, you'll understand you've probably already guessed where I'm about to take this, any why this solution is so valuable. This enables enterprises to:
 
-No more shipping our sensitive data out of our network (expensive egress) and to OpenAI who does who knows with it!
+1. Reduce costs (both egress and expensive managed inference)
+2. Keep our data in our environment (no more shipping sensitive data to OpenAI, which is often a non-starter for enterprise customers)
+3. Choice of model:
+    1. Balancing of throughput, accuracy, and resource consumption
+    2. Ability to use differnet models that may perform better for certain tasks
+    3. Use of proprietary models fine-tuned for their workloads
 
-Additionally, with the choice of model, we can also use our own proprietary models that are fine tuned for specific workloads.
+A solution that achieves all of these with such simplicity does not exist in the industry right now, and Redpanda Connect + Data Transforms enables this.
 
 ## Limitations
 
@@ -92,10 +105,10 @@ Everything should work out of the box. If something breaks first run, please rai
 
 Without a GPU it can be pretty slow.
 
-One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support) (which is where the demo task comes from). However, the novel retry framework shows it's immense value in practice:
+However, the novel retry framework shows it's immense value in practice:
 
 ```
-dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh                                                                     7:39PM
+dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh
 Consuming from 'structured' topic...
 {
   "topic": "structured",
