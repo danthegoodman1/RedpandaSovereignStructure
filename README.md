@@ -6,7 +6,7 @@ Submission to https://redpanda-hackathon.devpost.com/
 
 ## Bottom line up front
 
-Turns unstructured data into structured data using local models that run directly in Redpanda, so your data never has to leave your infrastructure. Combined with the retry mechanism, unstructured data to structured outputs becomes reasonably reliable for production workloads.
+Soverign Structure reliably turns unstructured data into JSON-schema conformant structured data using LLMs that run directly in Redpanda, giving you the choice of model, and never requiring your data to leave your infrastructure.
 
 ## How it works
 
