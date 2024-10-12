@@ -83,6 +83,13 @@ Note that the first time you produce a record it will have to download the llama
 
 You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.
 
+The connect pipeline specifies the `json` output format. This works fine, but `text` is also supported, as the transform will cast JSON string to JSON if it is given a string directly.
+
+The llama3.2 3b model is pretty _meh_. 3B params plus quantization really doesn't do many favors, but it can work most of the time. If you have the memory (and the GPUs), `model: llama3.1:8b` is a significant step up. Microsoft `phi3.5` and `phi3:14b` models are also really impressive for their size! llama 3.2 3b and phi3.5 trade punches in benchmarks, so test what works best for you:
+
+![461157789_931406385491961_1692349435372036848_n](/assets/461157789_931406385491961_1692349435372036848_n.png)
+
 ## Future work
 
 - Exploring more performant WASM allocators for rust transforms
+- The memory allocated to the WASM transforms has been bumped to 10MB because somehow something was very memory hungry?

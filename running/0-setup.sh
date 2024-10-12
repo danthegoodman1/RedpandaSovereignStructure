@@ -19,6 +19,11 @@ docker compose exec redpanda-0 rpk topic create structured
 
 echo "Topics created"
 
+echo "Configuring Redpanda..."
+docker compose exec redpanda-0 rpk cluster config set data_transforms_per_function_memory_limit 10485760
+docker compose exec redpanda-0 rpk cluster config set data_transforms_per_core_memory_reservation 100485760
+echo "Redpanda configured"
+
 # Add schemas
 echo "Adding schemas..."
 docker compose exec redpanda-0 rpk registry schema create record_attempted --schema /schemas/record_attempted.json
@@ -29,6 +34,7 @@ echo "Schemas added"
 echo "Enabling transforms..."
 docker compose exec redpanda-0 rpk cluster config set data_transforms_enabled true
 echo "Transforms enabled"
+
 echo "Restarting the cluster..."
 docker compose down
 docker compose up -d
@@ -37,11 +43,11 @@ echo "Cluster restarted"
 
 # Compile transforms
 echo "Compiling transforms..."
-rustup target add wasm32-wasi # need this!
+rustup target add wasm32-wasip1 # need this!
 
 build_and_deploy_transform() {
-    RUSTFLAGS=-Ctarget-feature=+simd128 cargo build --target=wasm32-wasi --release --package $1 --manifest-path transforms/$1/Cargo.toml
-    mv transforms/$1/target/wasm32-wasi/release/$1.wasm transforms/$1/
+    RUSTFLAGS=-Ctarget-feature=+simd128 cargo build --target=wasm32-wasip1 --release --package $1 --manifest-path transforms/$1/Cargo.toml
+    mv transforms/$1/target/wasm32-wasip1/release/$1.wasm transforms/$1/
     docker compose exec -w /transforms/$1 redpanda-0 rpk transform deploy
 }
 

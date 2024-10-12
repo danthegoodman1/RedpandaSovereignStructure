@@ -41,8 +41,9 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
             // A string, let's check if it's valid json
             if let Ok(_parsed_json) = serde_json::from_str::<Value>(str) {
                 // This is valid JSON, but we need to check if it is a valid schema
+                println!("Checking schema {}", schema.schema());
                 if jsonschema::is_valid(
-                    &json!(schema.schema()),
+                    &serde_json::from_str::<Value>(schema.schema()).expect("Failed to parse schema"),
                     &json!(_parsed_json),
                 ) {
                     // Valid! Let's write it to the structured topic
@@ -59,8 +60,9 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
         },
         Value::Object(_) => {
             // This is valid JSON, but we need to check if it is a valid schema
+            println!("Checking schema {}", schema.schema());
             if jsonschema::is_valid(
-                &json!(schema.schema()),
+                &serde_json::from_str::<Value>(schema.schema()).expect("Failed to parse schema"),
                 &input_record.output,
             ) {
                 // Valid! Let's write it to the structured topic
