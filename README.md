@@ -10,6 +10,8 @@ Sovereign Structure reliably turns unstructured data into JSON-schema conformant
 
 ## How it works
 
+[Short video walkthrough](https://www.youtube.com/watch?v=y1A9489Bz9c)
+
 1. Ingest unstructured data into the `input` topic
 2. Use the `format` transform to wrap that data with a retry counter (`attempts`), sending to the `unprocessed` topic
 3. Perform inference on records from the `unprocessed` topic, outputting to the `unverified` topic (with some light bloblang manipulation to recover the retry counter record structure)
