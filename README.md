@@ -46,7 +46,7 @@ Example resulting record:
 }
 ```
 
-This example is a bit more structured because of the performance of smaller models, which we'll dive into below.
+This example is a bit more structured because of the performance of smaller models, which we'll dive into in the [Selecting an LLM](#selecting-an-llm) section.
 
 ## Running it
 
