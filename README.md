@@ -22,6 +22,14 @@ Diagram:
 
 ![image (4)](/assets/image%20(4).png)
 
+Example input:
+```
+from: hackathonsubmitter@danthegoodman.com
+to: hackathonsubmissions@redpanda.com
+subject: i haz submission
+body: isn't it great?!!
+```
+
 Example resulting record:
 
 ```
