@@ -163,7 +163,7 @@ While we exchange accuracy for speed and memory consumption by using small LLMs,
 
 ### Selecting an LLM
 
-I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can provide consistent outputs. However to use truly unstructured outputs (blobs of text), you need at least a 20x larger model (70b and up).
+I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can _sometimes_ provide conformant output, and was good enough for development. However to use truly unstructured outputs (blobs of text), you need at least a 20x larger model (70b and up).
 
 Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured to structured conversions. Larger models quickly become more accurate and consistent with their outputs. As you can see in the example above, smaller models will hallucinate fields rather than omitting them.
 
