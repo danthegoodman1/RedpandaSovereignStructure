@@ -22,49 +22,6 @@ Diagram:
 
 ![image (4)](/assets/image%20(4).png)
 
-## Motivation
-
-OpenAI structured outputs are super useful, unlocking many novel use cases for LLMs, yet we seldom have the luxuries of managed models with open source models that we can run locally.
-
-This achieves that.
-
-It gives us all the advantages that [Redpanda Sovereign AI promises](https://ai.redpanda.com/), while also providing the benefits of structured outputs.
-
-While a system that can directly follow [the design shared by OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/#:~:text=achieve%20100%25%20reliability.-,Constrained%20decoding,-Our%20approach%20is) might reduce the complexity of the pipeline and result in fewer errors landing in the DLQ, there are some advantages.
-
-First, the following quote from OpenAI gives pause:
-
-> However, once the model has already sampled `{“val`, then `{` is no longer a valid token
-
-Well... `{` is still valid. It can be part of the string :)
-
-While this may be a poorly contrived example, it may not be, so we don’t fully know the limitations of their JSON output (e.g. do they support `null` as the output, or a top-level array?)
-
-What we trade in some runtime complexity to coordinate the AI and transform stages is orders of magnitude less complex and costly than what OpenAI has done, and now we can colocate the model with our data!
-
-No more shipping our sensitive data out of our network (expensive egress) and to OpenAI who does who knows with it!
-
-## Limitations
-
-This system is not perfect, there are a few unoptimal solutions that have to be performed:
-
-1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform for JSON and schema validation.
-2. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms. (there may be a way to resolve these then cache them with the schema registry sdk).
-3. There is no (convenient) way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
-
-## Code structure
-
-Expected dependencies to be installed are:
-- Docker
-- Rust toolchain (rustup, cargo, etc.)
-- A unix-based shell env (developed with zsh on arm macOS, but other shells should work fine)
-
-Everything should work out of the box. If something breaks first run, please raise an issue!
-
-- [`running`](./running/), you will find the various scripts needed to execute the code.
-- [`transforms`](./transforms/) you will find the various Rust data transforms that are used
-- [`helpers`](./helpers) are just various helper scripts I used to develop, tune, and eval the project, and are not required for execution or evaluation
-
 ## Running it
 
 Check the `running` directory. In there you will find numbered scripts that you can execute in order:
@@ -85,11 +42,57 @@ The terminal running the `1-consume.sh` script will spit out records that are fo
 
 _Note that it can also take some time to see the models run through the whole pipeline, depending on model size and hardware._
 
+## Motivation
+
+OpenAI structured outputs are super useful, unlocking many novel use cases for LLMs, yet we seldom have the luxuries of managed models with open source models that we can run locally.
+
+This achieves that.
+
+It gives us all the advantages that [Redpanda Sovereign AI promises](https://ai.redpanda.com/), while also providing the benefits of structured outputs.
+
+While a system that can directly follow [the design shared by OpenAI](https://openai.com/index/introducing-structured-outputs-in-the-api/#:~:text=achieve%20100%25%20reliability.-,Constrained%20decoding,-Our%20approach%20is) might reduce the complexity of the pipeline and result in fewer errors landing in the DLQ, there are some advantages to this system.
+
+First, the following quote from OpenAI gives pause:
+
+> However, once the model has already sampled `{“val`, then `{` is no longer a valid token
+
+Well... `{` is still valid. It can be part of the string :)
+
+While this may be a poorly contrived example, it may not be, so we don’t fully know the limitations of their JSON output (e.g. do they support `null` as the output, or a top-level array?)
+
+What we trade in some runtime complexity to coordinate the AI and transform stages is orders of magnitude less complex and costly than what OpenAI has done, and now we can colocate the model with our data!
+
+No more shipping our sensitive data out of our network (expensive egress) and to OpenAI who does who knows with it!
+
+Additionally, with the choice of model, we can also use our own proprietary models that are fine tuned for specific workloads.
+
+## Limitations
+
+This system is not perfect, there are a few unoptimal solutions that have to be performed:
+
+1. Because the LLM cannot guarantee JSON output, we must send it to the subsequent transform for JSON and schema validation.
+2. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms (there may be a way to resolve these then cache them with the schema registry sdk).
+3. There is no (convenient) way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
+
+## Code structure
+
+Expected dependencies to be installed are:
+- Docker
+- Rust toolchain (rustup, cargo, etc.)
+- A unix-based shell env (developed with zsh on arm macOS, but other shells should work fine)
+
+Everything should work out of the box. If something breaks first run, please raise an issue!
+
+- [`running`](./running), you will find the various scripts needed to execute the code.
+- [`transforms`](./transforms) you will find the various Rust data transforms that are used.
+- [`helpers`](./helpers) are just various helper scripts I used to develop, tune, and eval the project, and are not required for execution or evaluation.
+- [`records`](./records) Some example records for testing.
+
 ## Real world performance
 
 Without a GPU it can be pretty slow.
 
-One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support). However, the novel retry framework shows it's immense value in practice:
+One might think that the provided examples are quite contrived, and that this is a cheap clone of the [existing structured outputs demo](https://www.redpanda.com/blog/ai-connectors-gpu-runtime-support) (which is where the demo task comes from). However, the novel retry framework shows it's immense value in practice:
 
 ```
 dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh                                                                     7:39PM
@@ -101,7 +104,11 @@ Consuming from 'structured' topic...
 }
 ```
 
-Notice the `\"attempts\":2`? As you can see from this example, the first record I wrote into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
+Notice the `\"attempts\":2`?
+
+As you can see from this example, the first record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
+
+Additionally, ensuring that it conforms to an expected JSON schema is critical for production workloads.
 
 While we exchange accuracy for speed and memory consumption by using small LLMs, we compensate with the retry framework that negates the downsides at a cost generally lower than using larger models that higher zero-shot accuracy.
 
