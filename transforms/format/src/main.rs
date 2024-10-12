@@ -9,7 +9,7 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 struct RecordAttempted {
-    attempt: i32,
+    attempts: i32,
     content: Value,
 }
 
@@ -36,7 +36,7 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
     };
 
     let output_record = RecordAttempted {
-        attempt: 0,
+        attempts: 0,
         content: content,
     };
 

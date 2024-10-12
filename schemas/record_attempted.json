@@ -3,9 +3,9 @@
   "title": "OutputRecord",
   "type": "object",
   "properties": {
-    "attempt": {
+    "attempts": {
       "type": "integer",
-      "description": "The number of attempts"
+      "description": "The number of retries"
     },
     "content": {
       "type": "string",

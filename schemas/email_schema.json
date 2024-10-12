@@ -25,6 +25,6 @@
       "description": "The category or type of the email"
     }
   },
-  "required": ["subject", "from_addr", "body"],
+  "required": ["from_addr", "body", "category"],
   "additionalProperties": false
 }

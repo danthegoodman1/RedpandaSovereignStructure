@@ -29,6 +29,8 @@ pipeline:
                       "category": "Promotions"
                     }
 
+                    If something is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
+
                     Here is the email:
                     ${!this.content}
             response_format: json

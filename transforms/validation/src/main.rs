@@ -10,7 +10,7 @@ use std::error::Error;
 
 #[derive(Serialize, Deserialize)]
 struct LLMResult {
-    attempt: i32,
+    attempts: i32,
     // Original email content
     content: String,
     // Output from the LLM
@@ -87,10 +87,10 @@ fn record_failed(
     writer: &mut RecordWriter,
 ) -> Result<(), Box<dyn Error>> {
     // Increment the attempt count, serialize, and write back to try again
-    input_record.attempt += 1;
+    input_record.attempts += 1;
 
     // If the attempt is greater than 3, write to "unprocessable" topic
-    if input_record.attempt > MAX_ATTEMPTS {
+    if input_record.attempts > MAX_ATTEMPTS {
         writer.write_with_options(event.record, WriteOptions::to_topic("unprocessable")).expect("Failed to write to unprocessable topic");
         eprintln!("Record is unprocessable");
         return Ok(());
