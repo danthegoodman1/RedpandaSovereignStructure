@@ -11,7 +11,7 @@ Sovereign Structure reliably turns unstructured data into JSON-schema conformant
 ## How it works
 
 1. Ingest unstructured data into the `input` topic
-2. Use the `format` transform to wrap that data with a retry counter, sending to the `unprocessed` topic
+2. Use the `format` transform to wrap that data with a retry counter (`attempts`), sending to the `unprocessed` topic
 3. Perform inference on records from the `unprocessed` topic, outputting to the `unverified` topic (with some light bloblang manipulation to recover the retry counter record structure)
 4. `validation` transform reads from the `unprocessed` topic and will either:
    1. Write the record to the `structured` topic if the JSON is valid and conforms to the schema
@@ -21,6 +21,22 @@ Sovereign Structure reliably turns unstructured data into JSON-schema conformant
 Diagram:
 
 ![image (4)](/assets/image%20(4).png)
+
+Example resulting record:
+
+```
+{
+  "attempt": 2,
+  "content": "from: hackathonsubmitter@danthegoodman.com\\nto: hackathonsubmissions@redpanda.com\\nsubject: i haz submission\\nbody: isn't it great?!!",
+  "output": {
+    "body": "isn't it great?!!",
+    "category": "Primary",
+    "from_addr": "hackathonsubmitter@danthegoodman.com",
+    "from_name": "hackathonsubmitter",
+    "subject": "i haz submission"
+  }
+}
+```
 
 ## Running it
 
