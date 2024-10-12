@@ -151,7 +151,7 @@ While we exchange accuracy for speed and memory consumption by using small LLMs,
 
 I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can provide consistent outputs. However to use truly unstructured outputs (blobs of text), you need at least a 10x larger model.
 
-Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured->structured conversions. I would suggest `phi3:14b` or larger. Larger models quickly become more accurate and consistent with their outputs.
+Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured to structured conversions. I would suggest `phi3:14b` or larger. Larger models quickly become more accurate and consistent with their outputs.
 
 For consistent production-level performance, `llama3.1:70b` or larger is required, running on GPU instances. However this is hardly an inconvenience for enterprise users in comparison to shipping data to OpenAI. While maxed-out macbook pros can run this, it INSTANTLY cooks the laptop, so I would not suggest testing that outside a GPU server.
 
