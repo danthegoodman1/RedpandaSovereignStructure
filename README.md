@@ -79,6 +79,8 @@ In a third terminal you can run `running/2-write.sh` to write records to the inp
 
 Note that the first time you produce a record it will have to download the llama model. This can take some time. Use `docker compose logs -f redpanda-connect` to see what it's up to!
 
+The terminal running the `1-consume.sh` script will spit out records that are formatted as JSON, and fulfill the example task. You can also use the redpanda console at `localhost:8080` and inspect records in the various topics. There are some example emails in the `records` directory you can try sending
+
 ## Gotchas and other notes
 
 You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.

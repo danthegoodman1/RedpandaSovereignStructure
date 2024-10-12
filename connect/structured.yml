@@ -10,7 +10,7 @@ pipeline:
   - branch:
       processors:
         - ollama_chat:
-            model: phi3.5
+            model: llama3.2:3b
             prompt: |
                     Your task is to extract senders and classify emails into one of the following categories, and output it as JSON:
 
