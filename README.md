@@ -32,13 +32,13 @@ zsh running/0-setup.sh
 
 You'll then want to run:
 ```
-running/1-consume.sh
+zsh running/1-consume.sh
 ```
 in a terminal to consume final output.
 
 In a third terminal you can run:
 ```
-running/2-write.sh
+zsh running/2-write.sh
 ```
 to write records to the input topic.
 
