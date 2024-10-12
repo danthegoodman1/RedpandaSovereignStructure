@@ -99,6 +99,7 @@ This system is not perfect, there are a few unoptimal solutions that have to be 
 
 1. There are a few places where build-time variables would have to be injected, because they are not something that can be resolved (conveniently at least) at runtime. For example the schema registry IDs in the data transforms (there may be a way to resolve these then cache them with the schema registry sdk).
 2. There is no (convenient) way to dynamically pull schema registry entries into the connect LLM prompt at the moment, so we hard code it in
+3. Smaller LLMs are not smart enough to be given the JSON schema directly, so the prompt included an example final JSON output with comments about what is optional.
 
 ## Code structure
 
@@ -116,21 +117,29 @@ Everything should work out of the box. If something breaks first run, please rai
 
 ## Real world performance
 
-Without a GPU it can be a bit slow depending on record size and throughput. Thankfully we can parallelize operations with more cores, and we can introduce GPU machines to wildly speed up inference time.
+Without a GPU it can take a few seconds (after the model is initially loaded) depending on record size and throughput. Thankfully we can parallelize operations with more cores, and we can introduce GPU machines to wildly speed up inference time.
 
 The novel retry framework shows it's immense value in practice:
 
 ```
 dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh
 Consuming from 'structured' topic...
+# output prettified for readability
 {
-  "topic": "structured",
-  "value": "{\"attempts\":2,\"content\":\"from: hackathonsubmitter@danthegoodman.com\\\\\\\\nto: hackathonsubmissions@redpanda.com\\\\\\\\nsubject: i haz submission\\\\\\\\nbody: isn't it great?!!\",\"output\":{\"body\":\"isn't it great?!!\",\"category\":\"Primary\",\"from_addr\":\"hackathonsubmitter@danthegoodman.com\",\"from_name\":\"hackathonsubmitter\",\"subject\":\"i haz submission\"}}",
-  ...
+    "attempts": 2,
+    "content": "from: hackathonsubmitter@danthegoodman.com\\nto: hackathonsubmissions@redpanda.com\\nsubject: i haz submission\\nbody: isn't it great?!!",
+    "output": {
+        "body": "isn't it great?!!",
+        "category": "Primary",
+        "from_addr": "hackathonsubmitter@danthegoodman.com",
+        "from_name": "Hackathon Submitter", <- hallucination
+        "subject": "I haz submission"
+    }
 }
+
 ```
 
-Notice the `\"attempts\":2`?
+Notice the `"attempts": 2,`?
 
 As you can see from this example, the _first_ record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
 
@@ -138,18 +147,25 @@ Additionally, ensuring that it conforms to an expected JSON schema is critical f
 
 While we exchange accuracy for speed and memory consumption by using small LLMs, we compensate with the retry framework that negates the downsides at a cost generally lower than using larger models that higher zero-shot accuracy.
 
+### Selecting an LLM
+
+I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can provide consistent outputs. However to use truly unstructured outputs (blobs of text), you need at least a 10x larger model.
+
+Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured->structured conversions. I would suggest `phi3:14b` or larger. Larger models quickly become more accurate and consistent with their outputs.
+
+For consistent production-level performance, `llama3.1:70b` or larger is required, running on GPU instances. However this is hardly an inconvenience for enterprise users in comparison to shipping data to OpenAI. While maxed-out macbook pros can run this, it INSTANTLY cooks the laptop, so I would not suggest testing that outside a GPU server.
+
 ## Gotchas and other notes
 
 You will need to adjust the schema registry ID for `record_attempted` in the `format` and `validation` rust transforms if you're not using this vanilla demo environment. This is possible to customize with build flags, but that adds an unncessary amount of complexity for a demo like this.
 
 The connect pipeline specifies the `json` output format. This works fine, but `text` is also supported, as the transform will cast JSON string to JSON if it is given a string directly.
 
-The llama3.2 3b model is pretty _meh_. 3B params plus quantization really doesn't do many favors, but it can work most of the time. If you have the memory (and the GPUs), `model: llama3.1:8b` is a good next option to try. Microsoft `phi3.5` and `phi3:14b` models are also really impressive for their size! llama 3.2 3b and phi3.5 trade punches in benchmarks, so test what works best for you:
-
-![461157789_931406385491961_1692349435372036848_n](/assets/461157789_931406385491961_1692349435372036848_n.png)
-
 ## Future work
 
 - Exploring more performant WASM allocators for rust transforms
 - The memory allocated to the WASM transforms has been bumped to 10MB because somehow something was very memory hungry?
 - Framework for evaluating best model for a given task
+- Improve error handling and reliability: Right now it doesn't handle things like blank records very well (trasnform will just crash from invalid JSON)
+
+Redpanda really is wildly easier to use than similar solutions in both the streaming and inference space. This, combined with great support in the community Slack, allowed me to rapidly iterate on this project.

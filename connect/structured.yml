@@ -19,14 +19,20 @@ pipeline:
                     Promotions: Deals, offers, and other promotional emails.
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
+                    Support: Messages providing support to users of your business. These are frequently questions, or grievances
 
-                    Please output pure JSON using the following example as a reference for structure:
+                    For example an email formatted like this:
+                    ```
+                    Dan Goodman dan@danthegoodman.com\n\nMy hackathon submission\n\nDear redpanda team, i would like to submit this really neat project to the hackathon. I hope you like it!!!
+                    ```
+
+                    Would result in JSON like this:
                     {
-                      "subject": "Welcome to our newsletter!",
-                      "from_name": "John Doe",
-                      "from_addr": "john.doe@example.com",
-                      "body": "Thank you for subscribing to our newsletter. We'll keep you updated with the latest news and offers.",
-                      "category": "Promotions"
+                      "subject": "My hackathon submission", // optional
+                      "from_name": "Dan Goodman", // optional
+                      "from_addr": "dan@danthegoodman.com",
+                      "body": "Dear redpanda team, i would like to submit this really neat project to the hackathon. I hope you like it!!!",
+                      "category": "Primary"
                     }
 
                     If something is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.

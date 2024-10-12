@@ -1,0 +1,15 @@
+from: hackathonsubmitter@danthegoodman.com\nto: hackathonsubmissions@redpanda.com\nsubject: i haz submission\nbody: isn't it great?!!
+
+
+Example output:
+{
+    "attempts": 2,
+    "content": "from: hackathonsubmitter@danthegoodman.com\\nto: hackathonsubmissions@redpanda.com\\nsubject: i haz submission\\nbody: isn't it great?!!",
+    "output": {
+        "body": "isn't it great?!!",
+        "category": "Primary",
+        "from_addr": "hackathonsubmitter@danthegoodman.com",
+        "from_name": "Hackathon Submitter",
+        "subject": "I haz submission"
+    }
+}
