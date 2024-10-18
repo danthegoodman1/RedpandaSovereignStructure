@@ -179,7 +179,7 @@ Ensuring that records conforms to an expected JSON schema is _critical_ for prod
 
 While we exchange accuracy for speed and memory consumption by using small LLMs, we compensate with the retry framework that negates the downsides at a cost generally lower than using larger models that higher zero-shot accuracy.
 
-**Update**: Using the same Typescript-JSON hybrid declaration format has proven WILDLY more accurate, especially with smaller models (thanks BAML founders).
+**Update**: Using the same Typescript-JSON hybrid declaration format and prompt template as the BAML compiler produces has proven WILDLY more accurate, especially with smaller models (thanks BAML founders).
 
 Those promps should be in the format (see full example in [`structured.yml`](./connect/structured.yml)):
 
