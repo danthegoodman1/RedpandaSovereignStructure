@@ -173,7 +173,7 @@ The original record looked like:
 }
 ```
 
-This is mmissing the required `category` field. Thankfully the schema validation detected this, and sent it back through again to retry.
+This is missing the required `category` field. Thankfully the schema validation detected this, and sent it back through again to retry.
 
 Ensuring that records conforms to an expected JSON schema is _critical_ for production workloads.
 
