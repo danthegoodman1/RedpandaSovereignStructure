@@ -36,8 +36,6 @@ pipeline:
                     Updates: Automated confirmations, notifications, statements, and reminders that may not need immediate attention.
                     Forums: Messages from online groups, discussion boards, and mailing lists.
                     Support: Messages providing support to users of your business. These are frequently questions, or grievances
-
-                    If a field from the schema is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
             response_format: json
       result_map: |
           root.output = this

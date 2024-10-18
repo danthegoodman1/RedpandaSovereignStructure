@@ -205,8 +205,6 @@ For the category, use the following guide to help your decision
 Primary: Emails from people you know and messages that don’t appear in other tabs.
 Social: Messages from social networks and media-sharing sites.
 ...
-
-If a field from the schema is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
 ```
 
 ### Selecting an LLM
