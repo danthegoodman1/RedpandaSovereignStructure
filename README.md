@@ -142,30 +142,72 @@ Without a GPU it can take a few seconds (after the model is initially loaded) de
 The novel retry framework shows it's immense value in practice:
 
 ```
-dangoodman: ~/code/RedpandaSovereignStructure git:(main) zsh running/1-consume.sh
-Consuming from 'structured' topic...
-# output prettified for readability
 {
-    "attempts": 2,
+    "attempts": 1,
     "content": "from: hackathonsubmitter@danthegoodman.com\\nto: hackathonsubmissions@redpanda.com\\nsubject: i haz submission\\nbody: isn't it great?!!",
     "output": {
         "body": "isn't it great?!!",
-        "category": "Primary",
+        "category": "Social",
         "from_addr": "hackathonsubmitter@danthegoodman.com",
-        "from_name": "Hackathon Submitter", <- hallucination
-        "subject": "I haz submission"
+        "from_name": null,
+        "subject": "i haz submission"
     }
 }
-
 ```
 
-Notice the `"attempts": 2`?
+Notice the `"attempts": 1`?
 
-As you can see from this example, the _first_ record produced into the pipeline actually had to retry _twice_ before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
+As you can see from this example, the _first_ record produced into the pipeline actually had to retry before it produced valid JSON that conformed to the JSON schema. Without the retry framework, total failures would be common with these small LLMs.
 
-Additionally, ensuring that it conforms to an expected JSON schema is critical for production workloads.
+The original record looked like:
+
+```
+{
+    "attempts": 0,
+    "content": "from: hackathonsubmitter@danthegoodman.com\\nto: hackathonsubmissions@redpanda.com\\nsubject: i haz submission\\nbody: isn't it great?!!",
+    "output": {
+        "body": "isn't it great?!!",
+        "from_addr": "hackathonsubmitter@danthegoodman.com",
+        "subject": "i haz submission"
+    }
+}
+```
+
+This is mmissing the required `category` field. Thankfully the schema validation detected this, and sent it back through again to retry.
+
+Ensuring that records conforms to an expected JSON schema is _critical_ for production workloads.
 
 While we exchange accuracy for speed and memory consumption by using small LLMs, we compensate with the retry framework that negates the downsides at a cost generally lower than using larger models that higher zero-shot accuracy.
+
+**Update**: Using the same Typescript-JSON hybrid declaration format has proven WILDLY more accurate, especially with smaller models (thanks BAML founders).
+
+Those promps should be in the format (see full example in [`structured.yml`](./connect/structured.yml)):
+
+```
+Your task is to {{ task }}, and output it as JSON
+
+Extract this information:
+--
+${!this.content}
+--
+
+Answer in JSON using the following schema:
+{
+  subject: string or null,
+  from_name: string or null,
+  from_addr: string,
+  body: string,
+  category: "Primary" or "Social" or "Promotions" or "Updates" or "Forums" or "Support"
+}
+
+For the category, use the following guide to help your decision
+
+Primary: Emails from people you know and messages that don’t appear in other tabs.
+Social: Messages from social networks and media-sharing sites.
+...
+
+If a field from the schema is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
+```
 
 ### Selecting an LLM
 
@@ -188,5 +230,6 @@ The connect pipeline specifies the `json` output format. This works fine, but `t
 - Framework for evaluating best model for a given task
 - Improve error handling and reliability: Right now it doesn't handle things like blank records very well (trasnform will just crash from invalid JSON)
 - Improve the prompt, it's hard to iterate with small models on a laptop. For a production use case, using a large GPU machine with larger models and a wide variety of inputs to test should be performed to determine the proper model.
+- Integrating the BAML parser. They've done a wonderful job in parsing partially broken outputs, which would be a more efficient mechanism than just straight retrying. The core is written in Rust, so assuming no dependency issues, it should compile to WASM.
 
 Redpanda really is wildly easier to use than similar solutions in both the streaming and inference space. This, combined with great support in the community Slack, allowed me to rapidly iterate on this project.

@@ -12,7 +12,23 @@ pipeline:
         - ollama_chat:
             model: llama3.2:3b
             prompt: |
-                    Your task is to extract senders and classify emails into one of the following categories, and output it as JSON:
+                    Your task is to extract senders and classify emails into one of the following categories, and output it as JSON
+
+                    Extract this information:
+                    --
+                    ${!this.content}
+                    --
+
+                    Answer in JSON using the following schema:
+                    {
+                      subject: string or null,
+                      from_name: string or null,
+                      from_addr: string,
+                      body: string,
+                      category: "Primary" or "Social" or "Promotions" or "Updates" or "Forums" or "Support"
+                    }
+
+                    For the category, use the following guide to help your decision
 
                     Primary: Emails from people you know and messages that don’t appear in other tabs.
                     Social: Messages from social networks and media-sharing sites.
@@ -21,24 +37,7 @@ pipeline:
                     Forums: Messages from online groups, discussion boards, and mailing lists.
                     Support: Messages providing support to users of your business. These are frequently questions, or grievances
 
-                    For example an email formatted like this:
-                    ```
-                    Dan Goodman dan@danthegoodman.com\n\nMy hackathon submission\n\nDear redpanda team, i would like to submit this really neat project to the hackathon. I hope you like it!!!
-                    ```
-
-                    Would result in JSON like this:
-                    {
-                      "subject": "My hackathon submission", // optional
-                      "from_name": "Dan Goodman", // optional
-                      "from_addr": "dan@danthegoodman.com",
-                      "body": "Dear redpanda team, i would like to submit this really neat project to the hackathon. I hope you like it!!!",
-                      "category": "Primary"
-                    }
-
-                    If something is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
-
-                    Here is the email:
-                    ${!this.content}
+                    If a field from the schema is missing from the email, omit the JSON property rather than putting something blank in or hallucinating.
             response_format: json
       result_map: |
           root.output = this

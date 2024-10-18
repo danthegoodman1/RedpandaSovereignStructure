@@ -3,11 +3,11 @@
   "type": "object",
   "properties": {
     "subject": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "The subject line of the email"
     },
     "from_name": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "The name of the sender"
     },
     "from_addr": {
@@ -21,7 +21,14 @@
     },
     "category": {
       "type": "string",
-      "enum": ["Forums", "Primary", "Promotions", "Updates", "Social"],
+      "enum": [
+        "Primary",
+        "Social",
+        "Promotions",
+        "Updates",
+        "Forums",
+        "Support"
+      ],
       "description": "The category or type of the email"
     }
   },

@@ -60,7 +60,6 @@ fn my_transform(event: WriteEvent, writer: &mut RecordWriter) -> Result<(), Box<
         },
         Value::Object(_) => {
             // This is valid JSON, but we need to check if it is a valid schema
-            println!("Checking schema {}", schema.schema());
             if jsonschema::is_valid(
                 &serde_json::from_str::<Value>(schema.schema()).expect("Failed to parse schema"),
                 &input_record.output,
