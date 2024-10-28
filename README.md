@@ -209,11 +209,11 @@ Social: Messages from social networks and media-sharing sites.
 
 ### Selecting an LLM
 
-I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can _sometimes_ provide conformant output, and was good enough for development. However to use truly unstructured outputs (blobs of text), you need at least a 20x larger model (70b and up).
+I've left `llama3.2:3b` as the initial model since with semi-structured inputs (like [`example_email.txt`](./example_email.txt)), it can _often_ provide conformant output, and was good enough for development. However to use truly unstructured outputs (blobs of text), you need at least a 20x larger model (70b and up).
 
-Unfortunately, smaller models are quite bad at JSON output, as well as generally understanding unstructured to structured conversions. Larger models quickly become more accurate and consistent with their outputs. As you can see in the example above, smaller models will hallucinate fields rather than omitting them.
+Unfortunately, smaller models are relatively poor at JSON output, as well as generally understanding unstructured to structured conversions. Larger models quickly become more accurate and consistent with their outputs. As you can see in the example above, smaller models will hallucinate fields, omit required ones, etc.
 
-For consistent production-level performance, `llama3.1:70b` or larger is required, running on GPU instances. However this is hardly an inconvenience for enterprise users in comparison to shipping data to OpenAI. While maxed-out macbook pros can run this, it INSTANTLY cooks the laptop, so I would not suggest testing that outside a GPU server.
+`llama3.1:70b` or larger is definitely suggested, running on GPU instances. However this is hardly an inconvenience for enterprise users in comparison to shipping data to OpenAI. While maxed-out macbook pros can run this, it INSTANTLY cooks the laptop, so I would not suggest testing that outside a GPU server.
 
 ## Gotchas and other notes
 
